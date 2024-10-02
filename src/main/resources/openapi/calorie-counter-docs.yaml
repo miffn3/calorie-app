@@ -1,0 +1,463 @@
+openapi: 3.0.3
+#MARK: info 
+info:
+  title: api-home
+  description: |
+    ## Описание сервиса
+    Сервис предназначен для подсчета дневных калорий и отслеживания приемов пищи.
+
+  version: 1.0.0
+#MARK: tags 
+tags:
+  - name: Подсчет дневных калорий
+  - name: Запись приема пищи
+#MARK: paths
+paths:
+  /api/v1/users/{userId}/days/{day}/meals/:
+    post:
+      tags:
+        - meal-controller
+      operationId: createMeal
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: day
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealCreateDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MealDto'
+  /api/v1/users/:
+    post:
+      tags:
+        - user-controller
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+  /api/v1/products/:
+    post:
+      tags:
+        - product-controller
+      operationId: createProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProductDto'
+  /api/v1/users/{userId}/days/{day}/meals/{mealId}:
+    get:
+      tags:
+        - meal-controller
+      operationId: getMeal
+      parameters:
+        - name: mealId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MealDto'
+    delete:
+      tags:
+        - meal-controller
+      operationId: deleteMeal
+      parameters:
+        - name: mealId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags:
+        - meal-controller
+      operationId: updateMeal
+      parameters:
+        - name: mealId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealUpdateDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MealDto'
+  /api/v1/products/{productId}:
+    patch:
+      tags:
+        - product-controller
+      operationId: updateProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdateDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ProductDto'
+  /docs/openapi.yaml:
+    get:
+      tags:
+        - open-api-controller
+      operationId: getOpenApiContract
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/v1/users/{userId}:
+    get:
+      tags:
+        - user-controller
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+  /api/v1/users/{userId}/days/:
+    get:
+      tags:
+        - day-controller
+      operationId: getDay
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DayDto'
+    delete:
+      tags:
+        - day-controller
+      operationId: deleteDay
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+components:
+  #MARK: schemas
+  schemas:
+    MealCreateDto:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название приема пищи
+          example: Завтрак
+        productIds:
+          uniqueItems: true
+          type: array
+          description: Список идентификаторов продуктов
+          example:
+            - 7a895e31-9154-4541-81eb-45f678bb4971
+            - 7a895e31-9154-4541-81eb-45f678bb4972
+          items:
+            type: string
+            description: Список идентификаторов продуктов
+            format: uuid
+    MealDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор приема пищи
+          format: uuid
+          example: 7a895e31-9154-4541-81eb-45f678bb4971
+        name:
+          type: string
+          description: Название приема пищи
+          example: Завтрак
+        calories:
+          type: number
+          description: Калории
+          example: 130.1
+        proteins:
+          type: number
+          description: Белки
+          example: 12.5
+        fats:
+          type: number
+          description: Жиры
+          example: 10.1
+        carbohydrates:
+          type: number
+          description: Углеводы
+          example: 10.1
+        productIds:
+          uniqueItems: true
+          type: array
+          description: Список идентификаторов продуктов
+          example:
+            - 7a895e31-9154-4541-81eb-45f678bb4971
+            - 7a895e31-9154-4541-81eb-45f678bb4972
+          items:
+            type: string
+            description: Список идентификаторов продуктов
+            format: uuid
+    UserCreateDto:
+      required:
+        - age
+        - height
+        - weight
+      type: object
+      properties:
+        weight:
+          type: number
+          description: Вес
+          example: 70.1
+        height:
+          type: number
+          description: Рост
+          example: 170.1
+        age:
+          type: integer
+          description: Возраст
+          format: int32
+          example: 26
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор пользователя
+          format: uuid
+          example: 7a895e31-9154-4541-81eb-45f678bb4971
+        weight:
+          type: number
+          description: Вес
+          example: 70.1
+        height:
+          type: number
+          description: Рост
+          example: 170.1
+        age:
+          type: integer
+          description: Возраст
+          format: int32
+          example: 26
+    ProductCreateDto:
+      required:
+        - calories
+        - carbohydrates
+        - fats
+        - name
+        - proteins
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название продукта
+          example: Хлеб
+        calories:
+          type: number
+          description: Калории
+          example: 110.5
+        proteins:
+          type: number
+          description: Белки
+          example: 11.5
+        fats:
+          type: number
+          description: Жиры
+          example: 23.7
+        carbohydrates:
+          type: number
+          description: Углеводы
+          example: 110.5
+    ProductDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор продукта
+          format: uuid
+          example: 7a895e31-9154-4541-81eb-45f678bb4971
+        name:
+          type: string
+          description: Название продукта
+          example: Яблоко
+        calories:
+          type: number
+          description: Калорийность
+          example: 52
+        proteins:
+          type: number
+          description: Белки
+          example: 0.3
+        fats:
+          type: number
+          description: Жиры
+          example: 0.2
+        carbohydrates:
+          type: number
+          description: Углеводы
+          example: 13
+    MealUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название приема пищи
+          example: Завтрак
+        productIds:
+          uniqueItems: true
+          type: array
+          description: Список идентификаторов продуктов
+          example:
+            - 7a895e31-9154-4541-81eb-45f678bb4971
+            - 7a895e31-9154-4541-81eb-45f678bb4972
+          items:
+            type: string
+            description: Список идентификаторов продуктов
+            format: uuid
+    ProductUpdateDto:
+      type: object
+      properties:
+        name:
+          type: string
+        calories:
+          type: number
+        proteins:
+          type: number
+        fats:
+          type: number
+        carbohydrates:
+          type: number
+    DayDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Идентификатор дня
+          format: uuid
+          example: 7a895e31-9154-4541-81eb-45f678bb4971
+        date:
+          type: string
+          description: Дата
+          format: date
+          example: 2025-10-01
+        calories:
+          type: number
+          description: Калории
+          example: 120.2
+        proteins:
+          type: number
+          description: Белки
+          example: 7.2
+        fats:
+          type: number
+          description: Жиры
+          example: 7.2
+        carbohydrates:
+          type: number
+          description: Углеводы
+          example: 23.1
+        mealIds:
+          uniqueItems: true
+          type: array
+          description: Список идентификаторов приемов пищи
+          example:
+            - 7a895e31-9154-4541-81eb-45f678bb4971
+            - 7a895e31-9154-4541-81eb-45f678bb4972
+          items:
+            type: string
+            description: Список идентификаторов приемов пищи
+            format: uuid

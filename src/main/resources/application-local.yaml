@@ -1,0 +1,14 @@
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+
+spring:
+  application:
+    name: calorie-counter
+  datasource:
+    url: jdbc:postgresql://localhost:5432/calorie_counter?currentSchema=public
+    username: calorie_counter_user
+    password: calorie_counter_password

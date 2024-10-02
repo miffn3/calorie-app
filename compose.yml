@@ -1,0 +1,28 @@
+name: calorie-counter
+services:
+
+  calorie-counter-db:
+    image: "${DB_IMAGE}"
+    container_name: calorie-counter-db
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    ports:
+      - "${DB_PORT}:5432"
+
+  calorie-counter-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      JAVA_OPTS: >-
+        -XX:+UseZGC
+        -Xms256M
+        -Xmx2G
+      SPRING_PROFILES_ACTIVE: "${SPRING_PROFILES_ACTIVE}"
+    ports:
+      - "8080:8080"
+    depends_on:
+      calorie-counter-db:
+        condition: service_completed_successfully
