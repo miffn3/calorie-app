@@ -1,0 +1,17 @@
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+spring:
+  application:
+    name: calorie-counter
+  datasource:
+    url: jdbc:postgresql://rc1d-c4hspa1jrzrfrbl3.mdb.yandexcloud.net:6432/test-app-db?targetServerType=master&ssl=true&sslmode=verify-full&sslfactory=org.postgresql.ssl.SingleCertValidatingFactory&sslrootcert=classpath:root.cert&sslfactoryarg=classpath:CA.pem
+    properties:
+      ssl: true
+      sslMode: VERIFY_CA
+  jpa:
+    hibernate:
+      ddl-auto: update
